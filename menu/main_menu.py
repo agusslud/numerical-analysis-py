@@ -1,7 +1,8 @@
+from classes.roots import Roots
 from classes.curve_fitting import CurveFitting
 from classes.numerical_differentiation import NumericalDifferentiation
 from classes.numerical_integration import NumericalIntegration
-from classes.roots import Roots
+from classes.differential_equations import DifferentialEquations
 import numpy as np
 
 def handle_roots():
@@ -28,18 +29,50 @@ def handle_numerical_differentiation():
 def handle_numerical_integration():
   numerical_integration = NumericalIntegration()
   # upload data
-  interval = [1.1699, 5]
-  f = "1-x-4*x**(3)+3*x**(5)"
-  n = 10
+  x = []
+  y = []
+  f = "8+5*cos(x)"
 
-  numerical_integration.set_interval(interval)
-  numerical_integration.set_function(f)
-  numerical_integration.set_n(n)
+  if f == "":
+    x = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
+    y = [1, 7, 4, 3, 5, 9]
+
+    n = len(x)
+
+    if n == len(y):
+      numerical_integration.set_n(n)
+    else:
+      print("Los arreglos x y y deben tener la misma longitud")
+
+    numerical_integration.set_data(x, y)
+    
+  else:
+    interval = [0, np.pi]
+    n = 10
+    
+    numerical_integration.set_interval(interval)
+    numerical_integration.set_function(f)
+    numerical_integration.set_n(n)
+
   # menu
   numerical_integration.menu()
 
 def handle_differential_equations():
-  print("Ecuaciones diferenciales ordinarias")
+  differential_equations = DifferentialEquations()
+  # upload data
+  # initial conditions
+  x = [0]
+  y = [2]
+  f = "e**(0.8*x) - 0.5*y"
+  interval = [0, 4]
+  h = 0.1
+
+  differential_equations.set_data(x, y)
+  differential_equations.set_function(f)
+  differential_equations.set_interval(interval)
+  differential_equations.set_h(h)
+  # menu
+  differential_equations.menu()
 
 def handle_exit():
   global exit_program
@@ -76,5 +109,3 @@ def main_menu():
 
     selected_option = options.get(option, handle_invalid_option)
     selected_option()
-
-main_menu()

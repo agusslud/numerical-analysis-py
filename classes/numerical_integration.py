@@ -6,6 +6,8 @@ class NumericalIntegration:
     self.f = ""
     self.n = None
     self.h = None
+    self.x = []
+    self.y = []
     self.context = {
       'np': np,
       'e': np.e,
@@ -29,18 +31,47 @@ class NumericalIntegration:
   def set_h(self, h):
     self.h = h
 
+  def set_data(self, x, y):
+    self.x = x
+    self.y = y
+
   def trapezoidal_rule(self):
-    h = (self.interval[1] - self.interval[0]) / self.n
-    x = np.linspace(self.interval[0], self.interval[1], self.n+1)
-    y = []
-    for i in range(len(x)):
-      y.append(eval(self.f, self.context, {'x': x[i]}))
+    if len(self.x) > 0 and len(self.y) > 0:
+      h = (self.x[-1] - self.x[0]) / (len(self.x) - 1)
+      y = self.y.copy()
+    else:
+      h = (self.interval[1] - self.interval[0]) / self.n
+      self.x = np.linspace(self.interval[0], self.interval[1], self.n+1)
+      self.y = [eval(self.f, self.context, {'x': xi}) for xi in self.x]
+      y = self.y.copy()
+
     y[0] /= 2
     y[-1] /= 2
+
     return (h / 2) * (2 * np.sum(y))
   
   def simpson_rule(self):
-    pass
+    if len(self.x) > 0 and len(self.y) > 0:
+      h = (self.x[-1] - self.x[0]) / (len(self.x) - 1)
+      y = self.y.copy()
+    else:
+      h = (self.interval[1] - self.interval[0]) / self.n
+      self.x = np.linspace(self.interval[0], self.interval[1], self.n+1)
+      self.y = [eval(self.f, self.context, {'x': xi}) for xi in self.x]
+      y = self.y.copy()
+
+    y[0] /= 3
+    y[-1] /= 3
+
+    odd = 0
+    even = 0
+    for i in range(1, len(y) - 1):
+      if i % 2 == 0:
+        even += y[i]
+      else:
+        odd += y[i]
+
+    return (h / 3) * (y[0] + 4 * odd + 2 * even + y[-1])
 
   def print_integral(self, integral):
     print(f"Integral: {integral}")
@@ -59,7 +90,8 @@ class NumericalIntegration:
         integral = self.trapezoidal_rule()
         self.print_integral(integral)
       elif option == 2:
-        pass
+        integral = self.simpson_rule()
+        self.print_integral(integral)
       elif option == 3:
         exit = True
       else:
