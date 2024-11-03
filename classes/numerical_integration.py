@@ -63,13 +63,18 @@ class NumericalIntegration:
     y[0] /= 3
     y[-1] /= 3
 
+    print(f"h: {h}")
+    print(f"y[0]: {y[0]}, y[-1]: {y[-1]}")
+
     odd = 0
     even = 0
     for i in range(1, len(y) - 1):
       if i % 2 == 0:
         even += y[i]
+        print(f"par (y[{i}]): {y[i]}, suma_par: {even}")
       else:
         odd += y[i]
+        print(f"impar (y[{i}]): {y[i]}, suma_impar: {odd}")
 
     return (h / 3) * (y[0] + 4 * odd + 2 * even + y[-1])
 

@@ -1,72 +1,147 @@
+import numpy as np
 import sympy as sp
 
 class Roots:
   def __init__(self):
     self.expression = ""
-    self.roots = []
-    self.intervals = []
+    self.intervals = [[]]
+    self.tolerance = 10**(-3)
+    self.context = {
+      'np': np,
+      'e': np.e,
+      'pi': np.pi,
+      'sin': np.sin,
+      'cos': np.cos,
+      'tan': np.tan,
+      'log': np.log,
+      'exp': np.exp
+    }
 
-  def set_expression(self):
-    expression = input("Enter the expression: ")
-    self.expression = sp.sympify(expression)
+  def set_expression(self, expression):
+    self.expression = expression
+
+  def set_intervals(self, intervals):
+    self.intervals = intervals
+
+  def set_tolerance(self, error):
+    self.error = error
 
   def get_expression(self):
     return self.expression
   
-  def get_roots(self):
-    return self.roots
-  
   def get_intervals(self):
     return self.intervals
-
-  def calculate_intervals(self, max_roots, start, end):
-    fa = self.expression.subs(self.expression, start)
-    fb = self.expression.subs(self.expression, end)
-
-    for i in range(max_roots):
-      if fa * fb < 0:
-        self.intervals.append((start, end))
-      start = end
-      end += 1
-      fa = self.expression.subs(self.expression, start)
-      fb = self.expression.subs(self.expression, end)
   
+  def get_tolerance(self):
+    return self.tolerance
+
   def bisection(self):
-    # Get the expression
-    self.set_expression()
-    # Get the intervals
-    print("Ingrese desde donde quiere empezar a buscar las raices: ")
-    start = int(input())
-    print("Ingrese hasta donde quiere buscar las raices: ")
-    end = int(input())
-    print("Ingrese el numero de raices que quiere encontrar: ")
-    max_roots = int(input())
-    self.calculate_intervals(max_roots, start, end)
+    if len(self.intervals) == 0:
+      print("Primero calcule los intervalos")
+      return
 
     for interval in self.intervals:
       a, b = interval
-      fa = self.expression.subs(self.expression, a)
-      fb = self.expression.subs(self.expression, b)
-      c = (a + b) / 2
-      fc = self.expression.subs(self.expression, c)
-      while abs(fc) > 0.0001:
+      fa = self.expression.subs('x', a)
+      fb = self.expression.subs('x', b)
+
+      if fa * fb > 0:
+        print("No hay raices en el intervalo")
+        continue
+
+      print(f"Intervalo inicial: [{a}, {b}]")
+      print(f"f(a): {fa}, f(b): {fb}")
+
+      while True:
+        c = (a + b) / 2
+        fc = self.expression.subs('x', c)
+
+        print(f"Nuevo punto medio: c = {c}")
+        print(f"f(c): {fc}")
+
+        if abs(fc) < self.error:
+          break
+
         if fa * fc < 0:
           b = c
           fb = fc
+          print(f"Nuevo intervalo: [{a}, {b}]")
         else:
           a = c
           fa = fc
-        c = (a + b) / 2
-        fc = self.expression.subs(self.expression, c)
-      self.roots.append(c)
+          print(f"Nuevo intervalo: [{a}, {b}]")
 
-    print("Las raices son: ", self.roots)
+      print("\nLa raiz es: ", c, "\n")
 
   def fixed_point(self):
-    pass
+    max_iterations = 100
+
+    if len(self.intervals) == 0:
+      print("Primero calcule los intervalos")
+      return
+    
+    for interval in self.intervals:
+      a, b = interval
+      fa = eval(self.expression, self.context, {'x': a})
+      fb = eval(self.expression, self.context, {'x': b})
+
+      if fa * fb > 0:
+        print("No hay raices en el intervalo")
+        continue
+
+      print(f"Intervalo inicial: [{a}, {b}]")
+      print(f"f(a): {fa}, f(b): {fb}")
+
+      # asumimos que expression es una funcion g(x)
+
+      for i in range(max_iterations):
+        c = eval(self.expression, self.context, {'x': a})
+        fc = eval(self.expression, self.context, {'x': c})
+
+        print(f"Nuevo punto: c = {c}")
+        print(f"f(c): {fc}")
+
+        if abs(fc) < self.tolerance:
+          break
+
+        a = c
+
+      print("\nLa raiz es: ", c, "\n")
 
   def newton_raphson(self):
-    pass
+    if len(self.intervals) == 0:
+      print("Primero calcule los intervalos")
+      return
+
+    for interval in self.intervals:
+      a, b = interval
+      fa = self.expression.subs('x', a)
+      fb = self.expression.subs('x', b)
+
+      if fa * fb > 0:
+        print("No hay raices en el intervalo")
+        continue
+
+      print(f"Intervalo inicial: [{a}, {b}]")
+      print(f"f(a): {fa}, f(b): {fb}")
+
+      x = sp.symbols('x')
+      f_prime = sp.diff(self.expression, x)
+      g = x - self.expression / f_prime
+
+      while True:
+        c = g.subs('x', a)
+        fc = self.expression.subs('x', c)
+
+        print(f"Nuevo punto: c = {c}")
+        print(f"f(c): {fc}")
+
+        if abs(fc) < self.error:
+          break
+
+        a = c
+
+      print("\nLa raiz es: ", c, "\n")
 
   def secant(self):
     pass

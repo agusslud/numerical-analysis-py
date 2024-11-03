@@ -3,10 +3,18 @@ from classes.curve_fitting import CurveFitting
 from classes.numerical_differentiation import NumericalDifferentiation
 from classes.numerical_integration import NumericalIntegration
 from classes.differential_equations import DifferentialEquations
-import numpy as np
 
 def handle_roots():
   roots = Roots()
+
+  # upload data
+  # -0.874*x**2 + 1.750*x + 2.627
+  expression = "e**(-x)-x"
+  intervals = [[0, 1]]
+
+  roots.set_expression(expression)
+  roots.set_intervals(intervals)
+
   # menu
   roots.menu()
 
@@ -16,8 +24,8 @@ def handle_equation_system():
 def handle_curve_fitting():
   curve_fitting = CurveFitting()
   # upload data
-  x = [0, 1, 2, 3]
-  y = [1, 2.7182, 7.3891, 20.0855]
+  x = [-1, 0, 1, 2]
+  y = [2, -0.7183, 0, 0.8964]
   curve_fitting.set_data(x, y)
   # menu
   curve_fitting.menu()
@@ -31,7 +39,7 @@ def handle_numerical_integration():
   # upload data
   x = []
   y = []
-  f = "8+5*cos(x)"
+  f = "2-((x+2)/e**(x))"
 
   if f == "":
     x = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
@@ -47,7 +55,7 @@ def handle_numerical_integration():
     numerical_integration.set_data(x, y)
     
   else:
-    interval = [0, np.pi]
+    interval = [0, 5]
     n = 10
     
     numerical_integration.set_interval(interval)
@@ -61,11 +69,11 @@ def handle_differential_equations():
   differential_equations = DifferentialEquations()
   # upload data
   # initial conditions
-  x = [0]
-  y = [2]
-  f = "e**(0.8*x) - 0.5*y"
-  interval = [0, 4]
-  h = 0.1
+  f = "1/x*(y**2+y)"
+  x = [1]
+  y = [-2]
+  h = 0.2
+  interval = [1, 3]
 
   differential_equations.set_data(x, y)
   differential_equations.set_function(f)
